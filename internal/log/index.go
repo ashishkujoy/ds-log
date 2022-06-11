@@ -2,6 +2,7 @@ package log
 
 import (
 	"github.com/tysonmote/gommap"
+	"io"
 	"os"
 )
 
@@ -47,6 +48,39 @@ func (i *index) Close() error {
 		return err
 	}
 	return i.file.Close()
+}
+
+func (i *index) Read(relativeOffset int64) (offset uint32, position uint64, err error) {
+	if i.size == 0 {
+		return 0, 0, io.EOF
+	}
+	if relativeOffset == -1 {
+		offset = uint32((i.size / endWidth) - 1)
+	} else {
+		offset = uint32(relativeOffset)
+	}
+	position = uint64(offset) * endWidth
+
+	if i.size < position+endWidth {
+		return 0, 0, io.EOF
+	}
+	offset = enc.Uint32(i.mmap[position : position+offWidth])
+	position = enc.Uint64(i.mmap[position+offWidth : position+endWidth])
+	return offset, position, nil
+}
+
+func (i *index) Write(offset uint32, position uint64) error {
+	if uint64(len(i.mmap)) < i.size+endWidth {
+		return io.EOF
+	}
+	enc.PutUint32(i.mmap[i.size:i.size+offWidth], offset)
+	enc.PutUint64(i.mmap[i.size+offWidth:i.size+endWidth], position)
+	i.size += endWidth
+	return nil
+}
+
+func (i *index) Name() string {
+	return i.file.Name()
 }
 
 type Config struct {
