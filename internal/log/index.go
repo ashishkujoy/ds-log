@@ -28,7 +28,7 @@ func newIndex(f *os.File, c Config) (*index, error) {
 		return nil, err
 	}
 	idx.size = uint64(stat.Size())
-	if err := os.Truncate(f.Name(), c.Segment.MaxIndexBytes); err != nil {
+	if err := os.Truncate(f.Name(), int64(c.Segment.MaxIndexBytes)); err != nil {
 		return nil, err
 	}
 	if idx.mmap, err = gommap.Map(idx.file.Fd(), gommap.PROT_READ|gommap.PROT_WRITE, gommap.MAP_SHARED); err != nil {
@@ -81,12 +81,4 @@ func (i *index) Write(offset uint32, position uint64) error {
 
 func (i *index) Name() string {
 	return i.file.Name()
-}
-
-type Config struct {
-	Segment Segment
-}
-
-type Segment struct {
-	MaxIndexBytes int64
 }
