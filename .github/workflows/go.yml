@@ -28,4 +28,4 @@ jobs:
       run: make init && make gencert
 
     - name: Test
-      run: go test -v ./...
+      run: make test
