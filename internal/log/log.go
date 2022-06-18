@@ -97,9 +97,17 @@ func (l *Log) Read(offset uint64) (*log_v1.Record, error) {
 		}
 	}
 	if s == nil || s.nextOffSet <= offset {
-		return nil, fmt.Errorf("offset out of range: %d", offset)
+		return nil, ErrOutOfRange{offset}
 	}
 	return s.Read(offset)
+}
+
+type ErrOutOfRange struct {
+	Offset uint64
+}
+
+func (e ErrOutOfRange) Error() string {
+	return fmt.Sprintf("Offset out of range: %d", e.Offset)
 }
 
 func (l *Log) Close() error {

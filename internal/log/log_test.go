@@ -12,7 +12,7 @@ import (
 func Test_Log(t *testing.T) {
 	for scenario, fn := range map[string]func(t *testing.T, l *Log){
 		"append and read a record succeed": testAppendRead,
-		"offset out of range error":        testOutOfRangeErr,
+		"Offset out of range error":        testOutOfRangeErr,
 		"init with existing segments":      testInitExisting,
 		"reader for given log":             testReader,
 	} {
