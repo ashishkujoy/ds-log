@@ -1,6 +1,7 @@
 package log
 
 import (
+	"flag"
 	"github.com/stretchr/testify/require"
 	"io/ioutil"
 	"os"
@@ -11,6 +12,7 @@ var (
 	write = []byte("hello world")
 	width = uint64(len(write)) + lenWidth
 )
+var debug = flag.Bool("debug", false, "Enable observability for debugging.")
 
 func Test_StoreAppendRead(t *testing.T) {
 	f, err := ioutil.TempFile(".", "store_append_read_test")
